@@ -2,13 +2,14 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Net;
 
 namespace Seer.AGVController
 {
     public class AGVComFrame
     {
         #region 帧头定义
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        [StructLayout(LayoutKind.Sequential,  Pack = 1)]
         struct SeerHead
         {
             public byte sync;
@@ -19,22 +20,15 @@ namespace Seer.AGVController
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
             private byte[] reserved;      //保留,6字节
 
-            //public SeerHead()
-            //{
-            //    sync = SYNC;
-            //    version = 1;
-            //    number = (UInt16)(new Random(UInt16.MaxValue).Next());
-            //    length = 0;
-            //    type = 0;
-            //    reserved = new byte[6] { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-            //}
+      
             public SeerHead(AGVFrameTypes frameType, UInt32 len)
             {
                 sync = SYNC;
                 version = 1;
-                number = (UInt16)(new Random(UInt16.MaxValue).Next());
-                length = len;
-                type = (UInt16)frameType;
+                short sNumber = (short)(new Random().Next(UInt16.MaxValue));
+                number = (UInt16)((short)IPAddress.HostToNetworkOrder(sNumber));
+                length = (UInt32)((int)IPAddress.HostToNetworkOrder((int)len));
+                type = (UInt16)((short)IPAddress.HostToNetworkOrder((short)frameType));
                 reserved = new byte[6] { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
             }
 

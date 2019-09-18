@@ -53,6 +53,7 @@
     <Compile Include="AGVNavigation\IAGVOperationApi.cs" />
     <Compile Include="AGVComFrame.cs" />
     <Compile Include="AGVResponseBase.cs" />
+    <Compile Include="AGVStatus\AGVStatusPositionFrame.cs" />
     <Compile Include="EnumTypes\AGVErrorCodeTypes.cs" />
     <Compile Include="EnumTypes\AGVFrameTypes.cs" />
     <Compile Include="EnumTypes\AGVPortTypes.cs" />

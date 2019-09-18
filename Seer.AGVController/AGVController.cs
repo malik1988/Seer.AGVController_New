@@ -5,7 +5,7 @@ namespace Seer.AGVController
 {
     public class AgvController
     {
-        public string Ip { get; private set; } = "127.0.01";
+        public string Ip { get; private set; } = "127.0.0.1";
         AGVCommucation comNavi = new AGVCommucation();
         AGVCommucation comStatus = new AGVCommucation();
         bool _IsConnected = false;
@@ -64,7 +64,7 @@ namespace Seer.AGVController
             AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_取消当前导航, null);
             AGVComFrame recvFrame = comNavi.SendAndGet(sendFrame);
 
-            if (recvFrame != null )
+            if (recvFrame != null)
             {
                 AGVNavigationResponse resp = recvFrame.DataParse<AGVNavigationResponse>();
                 if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
@@ -98,7 +98,7 @@ namespace Seer.AGVController
             AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_暂停当前导航, null);
             AGVComFrame recvFrame = comNavi.SendAndGet(sendFrame);
 
-            if (recvFrame != null )
+            if (recvFrame != null)
             {
                 AGVNavigationResponse resp = recvFrame.DataParse<AGVNavigationResponse>();
                 if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
@@ -117,7 +117,7 @@ namespace Seer.AGVController
             AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_获取路径导航的路径, null);
             AGVComFrame recvFrame = comNavi.SendAndGet(sendFrame);
 
-            if (recvFrame != null )
+            if (recvFrame != null)
             {
                 AGVNavigationResponse resp = recvFrame.DataParse<AGVNavigationResponse>();
                 if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
@@ -134,9 +134,24 @@ namespace Seer.AGVController
             AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.状态_查询机器人导航状态, new { simple = simple });
             AGVComFrame recvFrame = comStatus.SendAndGet(sendFrame);
 
-            if (recvFrame != null )
+            if (recvFrame != null)
             {
                 AGVStatusNavigationStateFrame resp = recvFrame.DataParse<AGVStatusNavigationStateFrame>();
+                if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
+                {//导航获取成功
+                    return resp;
+                }
+            }
+            return null;
+        }
+
+        public AGVStatusPositionFrame GetPosition()
+        {
+            AGVComFrame recvFrame = comStatus.SendAndGet(new AGVComFrame(AGVFrameTypes.状态_查询机器人位置, null));
+
+            if (recvFrame != null)
+            {
+                AGVStatusPositionFrame resp = recvFrame.DataParse<AGVStatusPositionFrame>();
                 if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
                 {//导航获取成功
                     return resp;
