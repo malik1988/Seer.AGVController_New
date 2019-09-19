@@ -34,11 +34,11 @@ namespace Seer.AGVController
         /// 机器人当前所在站点的 ID（该判断比较严格，机器人必须很靠近某一个站点(<50cm)，否则为空字符，即不处于任何站点）
         /// </summary>
         [JsonProperty("current_station")]
-        public double CurrentStation { get; set; }
+        public string CurrentStation { get; set; }
         /// <summary>
         /// 机器人上一个所在站点的 ID
         /// </summary>
         [JsonProperty("last_station")]
-        public double LastStation { get; set; }
+        public string LastStation { get; set; }
     }
 }

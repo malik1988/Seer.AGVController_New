@@ -9,7 +9,7 @@ namespace Seer.AGVController
     public class AGVComFrame
     {
         #region 帧头定义
-        [StructLayout(LayoutKind.Sequential,  Pack = 1)]
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         struct SeerHead
         {
             public byte sync;
@@ -20,7 +20,7 @@ namespace Seer.AGVController
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
             private byte[] reserved;      //保留,6字节
 
-      
+
             public SeerHead(AGVFrameTypes frameType, UInt32 len)
             {
                 sync = SYNC;
@@ -59,6 +59,10 @@ namespace Seer.AGVController
         }
 
         public AGVFrameTypes FrameType { get; private set; }
+        /// <summary>
+        /// 是否响应数据
+        /// </summary>
+        public bool IsResponseFrame { get; private set; }
 
         public static int HeadLength { get { return Marshal.SizeOf(typeof(SeerHead)); } }
         public byte[] Data { get; private set; }
@@ -116,11 +120,23 @@ namespace Seer.AGVController
             {
                 Marshal.Copy(buf, 0, ptr, HeadLength);
                 SeerHead head = Marshal.PtrToStructure<SeerHead>(ptr);
+
+
+                head.number = (UInt16)((short)IPAddress.HostToNetworkOrder((short)head.number));
+                head.length = (UInt32)((int)IPAddress.HostToNetworkOrder((int)head.length));
+                head.type = (UInt16)((short)IPAddress.HostToNetworkOrder((short)head.type));
+
                 tmp = new AGVComFrame();
+                if (head.type > TYPE_RESPONSE_OFFSET)
+                {
+                    tmp.IsResponseFrame = true;
+                    head.type = (ushort)(head.type - TYPE_RESPONSE_OFFSET);
+                }
                 tmp.FrameType = (AGVFrameTypes)head.type;
                 uint length = head.length;
                 if (length <= buf.Length - HeadLength)
                 {
+                    tmp.Data = new byte[length];
                     Array.Copy(buf, HeadLength, tmp.Data, 0, head.length);
                 }
                 else

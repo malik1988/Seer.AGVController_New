@@ -6,6 +6,7 @@ namespace Seer.AGVController
     public class AgvController
     {
         public string Ip { get; private set; } = "127.0.0.1";
+        public string Name { get; set; }
         AGVCommucation comNavi = new AGVCommucation();
         AGVCommucation comStatus = new AGVCommucation();
         bool _IsConnected = false;
@@ -13,15 +14,21 @@ namespace Seer.AGVController
 
 
         IAGVOperationApi oprations = new AGVOperations();
-        public string Connect(string ip = "127.0.0.1")
+        public AgvController()
+        { }
+        public AgvController(string ip,string name="")
         {
-            string retNavi = comNavi.Connect(ip, AGVPortTypes.导航);
+            Ip = ip;
+            Name = name;
+        }
+        public string Connect()
+        {
+            string retNavi = comNavi.Connect(Ip, AGVPortTypes.导航);
             if (retNavi == "Success")
             {
                 _IsConnected = true;
-                Ip = ip;
             }
-            string retStatus = comStatus.Connect(ip, AGVPortTypes.状态);
+            string retStatus = comStatus.Connect(Ip, AGVPortTypes.状态);
             if (retStatus == "Success")
             {
                 _IsConnected = true;
