@@ -10,8 +10,14 @@ namespace Seer.AGVController
     [Serializable]
     public class AGVResponseBase
     {
+        /// <summary>
+        /// API 错误码
+        /// </summary>
         [JsonProperty("ret_code")]
         public AGVErrorCodeTypes RetCode { get; set; }
+        /// <summary>
+        /// 错误信息
+        /// </summary>
         [JsonProperty("err_msg")]
         public string ErrMsg { get; set; }
     }

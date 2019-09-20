@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AGV.AGVController
+namespace Seer.AGVController
 {
     public class AGVOperations : IAGVOperationApi
     {

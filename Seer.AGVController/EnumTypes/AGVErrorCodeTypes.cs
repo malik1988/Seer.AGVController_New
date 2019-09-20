@@ -9,6 +9,7 @@ namespace Seer.AGVController
     public enum AGVErrorCodeTypes : int
     {
         成功 = 0,
+        未知错误=1,
 
         请求不可用 = 40000,
         必要的请求参数缺失 = 40001,
@@ -89,6 +90,5 @@ namespace Seer.AGVController
         //，服务器会主动断连接，限制 200 MB
         数据区过大 = 60004,
 
-        未知错误
     }
 }

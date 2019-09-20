@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace AGV.AGVController
+namespace Seer.AGVController
 {
     /// <summary>
     /// 导航数据帧

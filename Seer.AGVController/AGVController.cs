@@ -1,4 +1,4 @@
-﻿using AGV.AGVController;
+﻿
 using System.Collections.Generic;
 
 namespace Seer.AGVController
@@ -9,14 +9,12 @@ namespace Seer.AGVController
         public string Name { get; set; }
         AGVCommucation comNavi = new AGVCommucation();
         AGVCommucation comStatus = new AGVCommucation();
-        bool _IsConnected = false;
-        public bool IsConnected { get { return _IsConnected; } }
-
+        public bool IsConnected { get; private set; }
 
         IAGVOperationApi oprations = new AGVOperations();
         public AgvController()
         { }
-        public AgvController(string ip,string name="")
+        public AgvController(string ip, string name = "")
         {
             Ip = ip;
             Name = name;
@@ -26,23 +24,25 @@ namespace Seer.AGVController
             string retNavi = comNavi.Connect(Ip, AGVPortTypes.导航);
             if (retNavi == "Success")
             {
-                _IsConnected = true;
+                IsConnected = true;
             }
+            else
+                IsConnected = false;
             string retStatus = comStatus.Connect(Ip, AGVPortTypes.状态);
             if (retStatus == "Success")
             {
-                _IsConnected = true;
+                IsConnected = true;
             }
+            else
+                IsConnected = false;
             return retNavi + ":" + retStatus;
         }
         /// <summary>
         /// 设置路径导航
         /// </summary>
         /// <param name="pos"></param>
-        public void SetNavi(string pos)
+        public AGVErrorCodeTypes SetNavi(string pos)
         {
-            if (!_IsConnected)
-                return;
 
             AGVNavigationDataFrame naviData = new AGVNavigationDataFrame()
             {
@@ -57,16 +57,17 @@ namespace Seer.AGVController
             if (recvFrame != null)
             {
                 AGVNavigationResponse resp = recvFrame.DataParse<AGVNavigationResponse>();
-                if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
+                if (null != resp)
                 {//导航发送成功
-
+                    return resp.RetCode;
                 }
             }
+            return AGVErrorCodeTypes.未知错误;
         }
         /// <summary>
         /// 取消导航
         /// </summary>
-        public void CancelNavi()
+        public AGVErrorCodeTypes CancelNavi()
         {
             AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_取消当前导航, null);
             AGVComFrame recvFrame = comNavi.SendAndGet(sendFrame);
@@ -74,16 +75,17 @@ namespace Seer.AGVController
             if (recvFrame != null)
             {
                 AGVNavigationResponse resp = recvFrame.DataParse<AGVNavigationResponse>();
-                if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
+                if (null != resp)
                 {//导航取消成功
-
+                    return resp.RetCode;
                 }
             }
+            return AGVErrorCodeTypes.未知错误;
         }
         /// <summary>
         /// 暂停导航
         /// </summary>
-        public void PauseNavi()
+        public AGVErrorCodeTypes PauseNavi()
         {
             AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_暂停当前导航, null);
             AGVComFrame recvFrame = comNavi.SendAndGet(sendFrame);
@@ -91,37 +93,39 @@ namespace Seer.AGVController
             if (recvFrame != null)
             {
                 AGVNavigationResponse resp = recvFrame.DataParse<AGVNavigationResponse>();
-                if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
-                {//导航暂停成功
-
+                if (null != resp)
+                {//导航取消成功
+                    return resp.RetCode;
                 }
             }
+            return AGVErrorCodeTypes.未知错误;
         }
         /// <summary>
         /// 继续当前导航
         /// </summary>
-        public void ContinueNavi()
+        public AGVErrorCodeTypes ContinueNavi()
         {
-            AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_暂停当前导航, null);
+            AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_继续当前导航, null);
             AGVComFrame recvFrame = comNavi.SendAndGet(sendFrame);
 
             if (recvFrame != null)
             {
                 AGVNavigationResponse resp = recvFrame.DataParse<AGVNavigationResponse>();
-                if (null != resp && resp.RetCode == AGVErrorCodeTypes.成功)
-                {//导航暂停成功
-
+                if (null != resp)
+                {//导航取消成功
+                    return resp.RetCode;
                 }
             }
+            return AGVErrorCodeTypes.未知错误;
         }
         /// <summary>
         /// 获取导航路径
         /// </summary>
-        /// <
+        /// <param name="target">目的地</param>
         /// <returns></returns>
         public List<string> GetPathNavi(string target)
         {
-            AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_获取路径导航的路径, null);
+            AGVComFrame sendFrame = new AGVComFrame(AGVFrameTypes.导航_获取路径导航的路径, new { id = target });
             AGVComFrame recvFrame = comNavi.SendAndGet(sendFrame);
 
             if (recvFrame != null)

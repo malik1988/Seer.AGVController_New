@@ -3,7 +3,7 @@ using Seer.AGVController;
 using System;
 using System.Collections.Generic;
 
-namespace AGV.AGVController
+namespace Seer.AGVController
 {
     [Serializable]
     public class AGVNavigationResponse : AGVResponseBase
